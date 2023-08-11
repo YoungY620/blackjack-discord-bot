@@ -5,7 +5,7 @@ use discord_flows::{
     ProvidedBot, Bot,
 };
 use flowsnet_platform_sdk::logger;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use serde_json::json;
 use store_flows::{get, set, del};
 use rand::{seq::SliceRandom, thread_rng};
@@ -38,7 +38,7 @@ type Card = String;
 enum HitOutcome { BUST, CONTINUE }
 enum GameEnding { PlayerWin, DealerWin, Tie }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 struct Game{
     pub dealer_cards: Vec<Card>,
     pub player_cards: Vec<Card>,
@@ -81,7 +81,7 @@ impl Game {
 
     pub fn new() -> Game {
         let quatar: Vec<String> = vec!["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-                                        .iter().map(|&s|s.to_owned()).collect();
+                                    .iter().map(ToString::to_string).collect();
         let mut one_deck = Vec::new();
         for _ in 0..4 {
             one_deck.extend(quatar.clone());
@@ -154,15 +154,7 @@ async fn handler(bot: &ProvidedBot, msg: Message) {
     }
 
     if let Some(store) = get("bj"){
-        let player_cards: Vec<String> = serde_json::from_value(store["player_cards"].clone()).unwrap();
-        let dealer_cards: Vec<String> = serde_json::from_value(store["dealer_cards"].clone()).unwrap();
-        let card2use: Vec<String> = serde_json::from_value(store["card2use"].clone()).unwrap();
-
-        let mut game = Game {
-            player_cards,
-            dealer_cards,
-            card2use,
-        };
+        let mut game: Game = serde_json::from_value(store).unwrap();
         
         let mut endding = false;
         let mut resp = match msg.content.to_lowercase().trim() {
