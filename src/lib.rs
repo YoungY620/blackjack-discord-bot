@@ -209,7 +209,7 @@ async fn handler(bot: &ProvidedBot, msg: Message) {
         }
         let mut game = Game::new();
         let resp = match game.init_game(){
-            Ok(_) => format!("Ok, let's begin. \n\n{}\n\nFor now,\n{}\n\n{}", INTRO_MSG, game.status(), HELP_MSG),
+            Ok(_) => format!("Ok, let's begin. \n\n{}\n\n{}\n\nFor now,\n{}", INTRO_MSG, HELP_MSG, game.status()),
             Err(e) => format!("There's something wrong and the game will be terminated. Possible Reason: {}", e)
         };
         let channel_id = msg.channel_id;
