@@ -153,7 +153,8 @@ async fn handler(bot: &ProvidedBot, msg: Message) {
         return;
     }
 
-    if let Some(store) = get("bj"){
+    let storage_id = format!("{}-{}", msg.author.id, msg.channel_id);
+    if let Some(store) = get(&storage_id){
         let mut game: Game = serde_json::from_value(store).unwrap();
         
         let mut endding = false;
